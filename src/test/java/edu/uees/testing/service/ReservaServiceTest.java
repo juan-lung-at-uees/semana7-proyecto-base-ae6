@@ -159,4 +159,18 @@ class ReservaServiceTest {
         assertThrows(IllegalArgumentException.class, () -> servicio.confirmar(null));
         verifyNoInteractions(disponibilidad, repository, notificador);
     }
+
+    @Test
+    @DisplayName("CP-14: Reserva cubre inicialización con tipo nulo y cancelación de entidad (cierre de hueco JaCoCo)")
+    void reservaPuedeCancelarseYCambiaEstado() {
+        // Arrange: entidad con tipo nulo cubre rama ternaria en constructor
+        Reserva reserva = new Reserva("R-01", null);
+
+        // Act: ejecutar cancelación de la entidad (método con 0% en JaCoCo)
+        reserva.cancelar();
+
+        // Assert: verificar estado CANCELADA y asignación por defecto "NORMAL"
+        assertEquals(EstadoReserva.CANCELADA, reserva.getEstado());
+        assertEquals("NORMAL", reserva.getTipo());
+    }
 }
