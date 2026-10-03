@@ -4,7 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ReservaServiceTest {
@@ -49,5 +51,52 @@ class ReservaServiceTest {
     void horasNegativasNoPermitenCancelar() {
         // Arrange & Act & Assert
         assertFalse(servicio.puedeCancelar(-1));
+    }
+
+    @Test
+    @DisplayName("CP-06: Cliente NORMAL no recibe descuento")
+    void normalNoRecibeDescuento() {
+        // Arrange & Act & Assert
+        assertEquals(100.0, servicio.calcularTotal("NORMAL", 100.0), 0.001);
+    }
+
+    @Test
+    @DisplayName("CP-07: Cliente VIP recibe 15% de descuento")
+    void vipRecibeQuincePorCiento() {
+        // Arrange
+        double base = 100.0;
+        // Act
+        double resultado = servicio.calcularTotal("VIP", base);
+        // Assert
+        assertEquals(85.0, resultado, 0.001);
+    }
+
+    @Test
+    @DisplayName("CP-08: Cliente ESTUDIANTE recibe 10% de descuento")
+    void estudianteRecibeDiezPorCiento() {
+        // Arrange
+        double base = 100.0;
+        // Act
+        double resultado = servicio.calcularTotal("ESTUDIANTE", base);
+        // Assert
+        assertEquals(90.0, resultado, 0.001);
+    }
+
+    @Test
+    @DisplayName("CP-09: Total base cero devuelve cero en cliente VIP")
+    void totalBaseCeroDevuelveCero() {
+        // Arrange & Act & Assert
+        assertEquals(0.0, servicio.calcularTotal("VIP", 0.0), 0.001);
+    }
+
+    @Test
+    @DisplayName("CP-10: Total base negativo lanza IllegalArgumentException")
+    void totalNegativoLanzaExcepcion() {
+        // Arrange & Act & Assert
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> servicio.calcularTotal("NORMAL", -1.0)
+        );
+        assertEquals("Total base inválido", ex.getMessage());
     }
 }
